@@ -14,14 +14,15 @@ import {
 } from "recharts";
 import { ActivityType } from "@/types/activity";
 
-const COLORS = [
-  "hsl(var(--primary))",
-  "hsl(var(--secondary))",
-  "hsl(var(--accent))",
-  "hsl(var(--muted))",
-  "hsl(var(--destructive))",
-  "hsl(var(--card))",
-];
+// Color palette based on theme colors with complementary variations
+const ACTIVITY_COLORS = {
+  call: "#6E2594",      // Primary Purple
+  email: "#ECD444",     // Primary Yellow
+  meeting: "#9B4ECD",   // Light Purple
+  proposal: "#B8A032",  // Dark Yellow
+  follow_up: "#4A1A63", // Dark Purple
+  networking: "#FFE066" // Light Yellow
+};
 
 interface ActivityData {
   type: ActivityType;
@@ -121,9 +122,15 @@ export default function MetricsVisualization() {
                     />
                     <Bar
                       dataKey="count"
-                      fill="hsl(var(--primary))"
-                      radius={[0, 4, 4, 0]}
-                    />
+                      fill="#6E2594"
+                    >
+                      {data.activities.map((entry) => (
+                        <Cell
+                          key={`cell-${entry.type}`}
+                          fill={ACTIVITY_COLORS[entry.type as keyof typeof ACTIVITY_COLORS]}
+                        />
+                      ))}
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -145,21 +152,21 @@ export default function MetricsVisualization() {
                         `${formatActivityName(type)} (${(percent * 100).toFixed(0)}%)`
                       }
                     >
-                      {data.activities.map((_, index) => (
+                      {data.activities.map((entry) => (
                         <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
+                          key={`cell-${entry.type}`}
+                          fill={ACTIVITY_COLORS[entry.type as keyof typeof ACTIVITY_COLORS]}
                         />
                       ))}
                     </Pie>
+                    <Legend
+                      formatter={(value) => formatActivityName(String(value))}
+                    />
                     <Tooltip
                       formatter={(value, name) => [
                         value,
-                        formatActivityName(String(name)),
+                        formatActivityName(String(name))
                       ]}
-                    />
-                    <Legend
-                      formatter={(value) => formatActivityName(String(value))}
                     />
                   </PieChart>
                 </ResponsiveContainer>

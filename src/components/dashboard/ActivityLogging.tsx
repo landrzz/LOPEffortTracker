@@ -199,7 +199,7 @@ export default function ActivityLogging() {
           />
         </div>
 
-        <Button onClick={handleSubmit} className="w-full">
+        <Button onClick={handleSubmit} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
           Log Activity
         </Button>
       </div>
