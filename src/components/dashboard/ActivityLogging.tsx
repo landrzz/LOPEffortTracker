@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/lib/supabase";
+import { toast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -50,6 +54,8 @@ const MOCK_LOAN_OFFICERS = [
 ];
 
 export default function ActivityLogging() {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const [type, setType] = useState<ActivityType>("call");
   const [notes, setNotes] = useState("");
   const [date, setDate] = useState<Date>(new Date());
@@ -68,7 +74,52 @@ export default function ActivityLogging() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be signed in to log activities",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.from("activities").insert({
+        type,
+        timestamp: date.toISOString(),
+        notes,
+        user_id: user.id,
+        lo_id: loId,
+        ...(COUNTABLE_ACTIVITIES.includes(type) && { count }),
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Activity logged successfully",
+      });
+
+      // Reset form
+      setNotes("");
+      setDate(new Date());
+      setType("call");
+      setCount(1);
+    } catch (error) {
+      console.error("Error logging activity:", error);
+      toast({
+        title: "Error",
+        description: "Failed to log activity. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
     if (!validateForm()) return;
 
     const activity = {
@@ -199,7 +250,19 @@ export default function ActivityLogging() {
           />
         </div>
 
-        <Button onClick={handleSubmit} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+        <Button
+          onClick={handleSubmit}
+          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Logging...
+            </>
+          ) : (
+            "Log Activity"
+          )}
           Log Activity
         </Button>
       </div>

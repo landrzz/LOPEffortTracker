@@ -3,15 +3,27 @@ import { UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useTheme } from "@/components/theme-provider";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import logo from "@/assets/images/TheLOPortal.webp";
 import { useAuth } from "@/lib/auth-context";
 
 export default function DashboardHeader() {
-  const { user, signOut } = useAuth();
   const { theme } = useTheme();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
-    if (!user && window.google) {
+    if (window.google && !user) {
       window.google.accounts.id.initialize({
         client_id:
           "290146856004-tb62kev5scqmino8npgha74q08p5mqto.apps.googleusercontent.com",
@@ -27,7 +39,7 @@ export default function DashboardHeader() {
         },
       );
     }
-  }, [user, theme]);
+  }, [theme, user]);
 
   return (
     <div className="flex justify-between items-center p-6 bg-background border-b">
@@ -38,14 +50,52 @@ export default function DashboardHeader() {
         </h1>
       </div>
       <div className="flex flex-col items-center gap-3">
-        {user ? (
-          <Button variant="ghost" className="gap-2" onClick={signOut}>
-            <UserCircle className="h-5 w-5" />
-            <span>{user.email}</span>
-          </Button>
-        ) : (
-          <div id="g_id_signin" />
-        )}
+        <div className="flex items-center gap-2">
+          {!user && <div id="g_id_signin" />}
+          {user && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full p-0 h-10 w-10 overflow-hidden"
+                >
+                  <Avatar>
+                    <AvatarImage
+                      src={
+                        user.user_metadata?.avatar_url ||
+                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`
+                      }
+                      alt={user.email}
+                    />
+                    <AvatarFallback>
+                      {user.email?.[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Sign Out</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to sign out?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      signOut();
+                      window.google?.accounts.id.revoke(user.email, () => {});
+                    }}
+                  >
+                    Sign Out
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
         <ThemeToggle className="self-center" />
       </div>
     </div>
