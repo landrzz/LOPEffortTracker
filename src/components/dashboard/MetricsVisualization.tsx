@@ -100,7 +100,7 @@ export default function MetricsVisualization() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="h-[300px]">
                 <h3 className="text-sm font-medium mb-2">
-                  Activity Distribution
+                  Effort Distribution
                 </h3>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
@@ -136,7 +136,7 @@ export default function MetricsVisualization() {
               </div>
 
               <div className="h-[300px]">
-                <h3 className="text-sm font-medium mb-2">Activity Share</h3>
+                <h3 className="text-sm font-medium mb-2">Effort Share</h3>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie

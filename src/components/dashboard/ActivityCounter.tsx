@@ -11,7 +11,7 @@ export default function ActivityCounter() {
     <Card className="p-6 bg-background">
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-medium">Today's Activities</h3>
+          <h3 className="text-lg font-medium">Today's Efforts</h3>
           <span className="text-2xl font-bold">{currentCount}</span>
         </div>
         <Progress value={progress} className="h-2" />

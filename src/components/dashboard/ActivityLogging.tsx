@@ -89,7 +89,7 @@ export default function ActivityLogging() {
 
   return (
     <Card className="p-6 bg-background">
-      <h2 className="text-xl font-semibold mb-4">Log Activity</h2>
+      <h2 className="text-xl font-semibold mb-4">Log an Activity</h2>
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="activity-type">Activity Type</Label>
@@ -114,32 +114,6 @@ export default function ActivityLogging() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>Date & Time</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(date) => date && setDate(date)}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            {errors.date && (
-              <p className="text-sm text-destructive">{errors.date}</p>
-            )}
-          </div>
-
           {COUNTABLE_ACTIVITIES.includes(type) && (
             <div className="space-y-2">
               <Label htmlFor="count">
@@ -165,6 +139,32 @@ export default function ActivityLogging() {
               />
             </div>
           )}
+
+          <div className="space-y-2">
+            <Label>Date & Time</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(date) => date && setDate(date)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            {errors.date && (
+              <p className="text-sm text-destructive">{errors.date}</p>
+            )}
+          </div>
         </div>
 
         {MOCK_USER.role !== "loan_officer" && (
