@@ -15,6 +15,7 @@ export type Database = {
           created_at: string | null
           id: string
           lo_id: string
+          location_id: string | null
           notes: string | null
           timestamp: string
           type: Database["public"]["Enums"]["activity_type"]
@@ -26,6 +27,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           lo_id: string
+          location_id?: string | null
           notes?: string | null
           timestamp: string
           type: Database["public"]["Enums"]["activity_type"]
@@ -37,6 +39,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           lo_id?: string
+          location_id?: string | null
           notes?: string | null
           timestamp?: string
           type?: Database["public"]["Enums"]["activity_type"]
@@ -44,6 +47,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          uid: string
+          display_name: string | null
+          email: string
+          location_id: string | null
+          lo_id: string | null
+          phone: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          uid: string
+          display_name?: string | null
+          email: string
+          location_id?: string | null
+          lo_id?: string | null
+          phone?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          uid?: string
+          display_name?: string | null
+          email?: string
+          location_id?: string | null
+          lo_id?: string | null
+          phone?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_uid_fkey"
+            columns: ["uid"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {

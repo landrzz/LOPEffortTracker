@@ -68,6 +68,7 @@ export default function ActivityLogging() {
   const [notes, setNotes] = useState("");
   const [date, setDate] = useState<Date>(new Date());
   const [count, setCount] = useState<number>(1);
+  const [locationId, setLocationId] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -161,6 +162,7 @@ export default function ActivityLogging() {
         notes,
         user_id: user?.id,
         lo_id: '1234',
+        location_id: locationId || null,
         ...(COUNTABLE_ACTIVITIES.includes(type) && { count }),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -201,6 +203,7 @@ export default function ActivityLogging() {
       setDate(new Date());
       setType("call");
       setCount(1);
+      setLocationId("");
     } catch (error: any) {
       console.error("Error logging activity:", error);
       
@@ -301,6 +304,16 @@ export default function ActivityLogging() {
         <div className="space-y-2">
           <Label>Loan Officer</Label>
           <p>1234</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Location ID (Optional)</Label>
+          <Input
+            id="location"
+            value={locationId}
+            onChange={(e) => setLocationId(e.target.value)}
+            placeholder="Enter location ID"
+          />
         </div>
 
         <div className="space-y-2">

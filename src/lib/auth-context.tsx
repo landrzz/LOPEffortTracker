@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
+import { upsertUserProfile } from "./user-profile";
 
 type AuthContextType = {
   user: User | null;
@@ -20,17 +21,43 @@ declare global {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
+  // Function to handle user profile upsert
+  const handleUserProfileUpsert = async (user: User | null) => {
+    if (user) {
+      try {
+        const { error } = await upsertUserProfile(user);
+        if (error) {
+          console.error("Error upserting user profile:", error);
+        }
+      } catch (err) {
+        console.error("Exception while upserting user profile:", err);
+      }
+    }
+  };
+
   useEffect(() => {
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      
+      // Upsert user profile if there's a user
+      if (currentUser) {
+        handleUserProfileUpsert(currentUser);
+      }
     });
 
     // Listen for changes on auth state (signed in, signed out, etc.)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      
+      // Upsert user profile if the auth state change involves a user
+      if (currentUser) {
+        handleUserProfileUpsert(currentUser);
+      }
     });
 
     // Initialize Google Sign-In
